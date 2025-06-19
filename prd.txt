@@ -1,0 +1,113 @@
+📝 Product Requirements Document (PRD)
+
+Project Title: 3D Print Order System
+Target Stack:
+	•	Backend: FastAPI
+	•	Database: Supabase (PostgreSQL + Storage)
+	•	Frontend: Next.js (React, TypeScript)
+
+⸻
+
+1. 🎯 Goal
+
+Build a full-stack web application to manage 3D printing orders. Users can upload STL files, receive instant price estimates, and track their order status. Admins can update order progress from the dashboard.
+
+⸻
+
+2. 🔧 Functional Requirements
+
+✅ User Features
+
+Feature	Description
+Upload STL	Users upload .stl file through the frontend
+Instant Quote	Backend calculates quote based on fake/estimated weight and print time
+Create Order	Store order info in Supabase table
+View Order Status	Users can visit /order/[id] to view status
+Get Email/Link	Optional: Show/Send tracking link on successful upload
+
+✅ Admin Features
+
+Feature	Description
+View All Orders	Admins can view list of all orders from /dashboard
+Update Status	Change order status to printing, shipped, etc.
+
+
+⸻
+
+3. 🧮 Quote Calculation Logic
+
+total_price = (weight_g * £0.15) + (print_time_hr * £1.50) + £3.00 setup
+
+Initially, use placeholder values: weight = 20.7g, time = 1.23h
+
+⸻
+
+4. 🗃️ Database Schema (Supabase Table: orders)
+
+Field	Type	Description
+id	UUID	Primary key
+file_url	TEXT	Public URL to STL file
+weight_g	FLOAT	Estimated weight
+print_time_h	FLOAT	Estimated time
+price_gbp	FLOAT	Final calculated price
+status	TEXT	pending, printing, shipped
+created_at	TIMESTAMP	Auto-generated
+
+
+⸻
+
+5. 📡 API Endpoints (FastAPI)
+
+Method	Route	Purpose
+POST	/upload	Upload STL, calculate price, create order
+GET	/order/{id}	Fetch order details by ID
+PATCH	/order/{id}	Update order status
+GET	/orders	(Admin) Get all orders
+
+
+⸻
+
+6. 🌐 Frontend Pages (Next.js)
+
+Route	Component	Description
+/	FileUploader	Upload file + show price
+/order/[id]	OrderStatusPage	Track order status
+/dashboard	AdminDashboard	View + update all orders
+
+
+⸻
+
+7. 🧱 Project Folder Structure
+
+Backend (FastAPI):
+
+backend/
+├── main.py
+├── supabase_client.py
+├── schemas.py
+├── utils.py
+├── .env
+
+Frontend (Next.js):
+
+frontend/
+├── pages/
+│   ├── index.tsx
+│   ├── order/[id].tsx
+│   └── dashboard.tsx
+├── components/
+├── utils/
+├── public/
+
+
+⸻
+
+8. 🚀 Future Enhancements
+	•	Supabase Auth for user login
+	•	Email confirmation with order tracking link
+	•	Real STL parsing to calculate volume/weight
+	•	Stripe integration for payment
+
+⸻
+
+Let me know if you want this PRD saved to a file or opened in Cursor as a starting doc. Ready to generate the main.py or frontend code next?
