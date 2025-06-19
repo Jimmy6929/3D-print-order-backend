@@ -1,0 +1,127 @@
+# 3D Print Order Backend - Cursor Rules
+
+## Project Overview
+This is a full-stack 3D printing order management system with:
+- **Backend**: FastAPI with Supabase (PostgreSQL + Storage)
+- **Frontend**: Next.js with TypeScript and React
+- **Purpose**: Handle STL file uploads, calculate pricing, and manage order status
+
+## Code Style & Standards
+
+### Python (Backend)
+- Use FastAPI best practices with proper type hints
+- Follow PEP 8 style guidelines
+- Use async/await for database operations and file handling
+- Implement proper error handling with HTTPException
+- Use Pydantic models for data validation
+- Keep functions focused and single-purpose
+
+### TypeScript/React (Frontend)
+- Use TypeScript strict mode
+- Follow React functional component patterns with hooks
+- Use proper type definitions for all props and state
+- Implement proper error boundaries
+- Use Next.js file-based routing conventions
+- Follow modern React patterns (avoid class components)
+
+## Architecture Guidelines
+
+### Backend Structure
+- Keep `main.py` focused on route definitions
+- Separate business logic into utility modules (`utils.py`)
+- Use `schemas.py` for Pydantic models
+- Maintain clean separation between API, business logic, and data access
+
+### Frontend Structure
+- Use component-based architecture
+- Keep pages simple, delegate logic to components
+- Implement proper loading and error states
+- Use TypeScript interfaces for all data structures
+
+## Database & Storage
+- Use Supabase for both PostgreSQL database and file storage
+- Follow the defined schema for the `orders` table
+- Implement proper file upload handling for STL files
+- Use UUIDs for order identification
+
+## API Design
+- Follow RESTful conventions
+- Use proper HTTP status codes
+- Implement CORS for frontend communication
+- Return consistent JSON response formats
+- Include proper error messages
+
+## Security Considerations
+- Validate file types (only .stl files)
+- Implement proper CORS configuration
+- Use environment variables for sensitive data
+- Sanitize user inputs
+
+## Testing
+- Write unit tests for utility functions
+- Test API endpoints with proper mocking
+- Use pytest for backend testing
+- Test file upload functionality
+
+## File Organization
+- Keep related functionality together
+- Use descriptive file and function names
+- Maintain clear separation between frontend and backend
+- Follow the established project structure
+
+## Common Patterns
+
+### Backend Patterns
+```python
+# Error handling
+if not condition:
+    raise HTTPException(status_code=400, detail="Descriptive message")
+
+# Database operations
+response = supabase.table("orders").select("*").eq("id", order_id).execute()
+
+# File handling
+contents = await file.read()
+storage_response = supabase.storage.from_("stl-files").upload(filename, contents)
+```
+
+### Frontend Patterns
+```typescript
+// Component structure
+interface ComponentProps {
+  // Define props
+}
+
+const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
+  // Component logic
+  return (
+    // JSX
+  );
+};
+
+// API calls
+const response = await fetch('/api/endpoint', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(data)
+});
+```
+
+## Business Logic
+- Price calculation: `(weight_g * £0.15) + (print_time_hr * £1.50) + £3.00 setup`
+- Order statuses: pending, printing, shipped
+- File storage in Supabase Storage bucket "stl-files"
+
+## Development Workflow
+- Use virtual environments for Python dependencies
+- Run backend with uvicorn
+- Use Next.js dev server for frontend
+- Test API endpoints with proper CORS configuration
+- Ensure proper environment variable setup
+
+## Future Considerations
+- Authentication with Supabase Auth
+- Real STL file parsing for accurate weight/time calculation
+- Payment integration (Stripe)
+- Email notifications
+- Admin dashboard enhancements 
