@@ -97,3 +97,28 @@ def update_order_status(order_id: str, status: str):
 def get_all_orders():
     response = supabase.table("orders").select("*").execute()
     return response.data
+
+@app.get("/debug/files")
+def list_storage_files():
+    """Debug endpoint to list all files in stl-files storage"""
+    try:
+        files = supabase.storage.from_("stl-files").list()
+        return {
+            "bucket": "stl-files", 
+            "file_count": len(files) if files else 0,
+            "files": files[:10] if files else []  # Show first 10 files
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/debug/orders-with-files")
+def list_orders_with_file_info():
+    """Debug endpoint to show orders with file URL info"""
+    try:
+        response = supabase.table("orders").select("id, file_url, created_at").execute()
+        return {
+            "order_count": len(response.data) if response.data else 0,
+            "orders": response.data[:5] if response.data else []  # Show first 5 orders
+        }
+    except Exception as e:
+        return {"error": str(e)}

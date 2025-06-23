@@ -66,9 +66,7 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
           margin: '0',
           textShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          £{calculationDetails ? 
-            (((calculationDetails.weight_g * 0.02) + (calculationDetails.print_time_h * 5) + 3).toFixed(2)) : 
-            price.toFixed(2)}
+          £{price.toFixed(2)}
         </div>
         <div style={{
           fontSize: '1.1rem',
@@ -152,7 +150,7 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
               boxShadow: '0 4px 8px rgba(251, 191, 36, 0.3)'
             }}>
               <span style={{ fontWeight: '500' }}>Cost</span>
-              <strong>£{((calculationDetails.weight_g * 0.02) + (calculationDetails.print_time_h * 5)).toFixed(2)}</strong>
+              <strong>£{((calculationDetails.weight_g * 0.02) + (calculationDetails.print_time_h * 2.5)).toFixed(2)}</strong>
             </div>
             
             <div style={{ 
@@ -166,7 +164,7 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
               boxShadow: '0 4px 8px rgba(16, 185, 129, 0.3)'
             }}>
               <span style={{ fontWeight: '500' }}>Base Fee</span>
-              <strong>£3.00</strong>
+              <strong>£2.00</strong>
             </div>
           </div>
         </div>
