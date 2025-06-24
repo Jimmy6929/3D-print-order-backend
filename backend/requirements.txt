@@ -45,3 +45,6 @@ typing_extensions==4.14.0
 uvicorn==0.34.3
 websockets==14.2
 yarl==1.20.1
+
+# Additional libraries for 3D file format support
+trimesh==4.0.5  # General 3D mesh processing library for STL, OBJ, and basic STEP support

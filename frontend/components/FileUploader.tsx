@@ -27,8 +27,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.name.endsWith('.stl')) {
-      setError('Only STL files are allowed.');
+    
+    const allowedExtensions = ['.stl', '.obj', '.step', '.stp'];
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExtension)) {
+      setError('Only STL, OBJ, and STEP (.stp/.step) files are allowed.');
       return;
     }
     setError(null);
@@ -70,18 +74,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
       }}>
         <div style={{ 
           marginBottom: '1.5rem', 
-          fontSize: '4rem',
+          fontSize: '3rem',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
           fontWeight: 'bold'
         }}>
-          STL
+          3D FILES
         </div>
         <input
           type="file"
-          accept=".stl"
+          accept=".stl,.obj,.step,.stp"
           ref={fileInputRef}
           onChange={handleFileChange}
           disabled={uploading}
@@ -104,7 +108,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
           fontSize: '1rem',
           fontWeight: '500' 
         }}>
-          Select your STL file to get started
+          Select your 3D file (STL, OBJ, STEP) to get started
         </div>
       </div>
       {uploading && (
@@ -129,7 +133,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
             verticalAlign: 'middle'
           }}></div>
           <span style={{ fontWeight: '600', fontSize: '1.1rem' }}>
-            Analyzing your STL file...
+            Analyzing your 3D file...
           </span>
         </div>
       )}

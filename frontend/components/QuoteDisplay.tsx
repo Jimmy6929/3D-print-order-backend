@@ -8,6 +8,8 @@ interface CalculationDetails {
   print_time_h: number;
   material: string;
   material_density: number;
+  file_format?: string;
+  original_filename?: string;
 }
 
 interface QuoteDisplayProps {
@@ -166,6 +168,22 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
               <span style={{ fontWeight: '500' }}>Base Fee</span>
               <strong>£2.00</strong>
             </div>
+            
+            {calculationDetails.file_format && (
+              <div style={{ 
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: 'white',
+                boxShadow: '0 4px 8px rgba(139, 92, 246, 0.3)'
+              }}>
+                <span style={{ fontWeight: '500' }}>File Format</span>
+                <strong>{calculationDetails.file_format}</strong>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -213,7 +231,9 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
             justifyContent: 'space-between', 
             alignItems: 'center' 
           }}>
-            <span style={{ color: '#64748b', fontWeight: '500', fontSize: '1rem' }}>STL File</span>
+            <span style={{ color: '#64748b', fontWeight: '500', fontSize: '1rem' }}>
+              {calculationDetails?.original_filename || '3D File'}
+            </span>
             <a 
               href={fileUrl} 
               target="_blank" 
@@ -238,7 +258,7 @@ const QuoteDisplay: React.FC<QuoteDisplayProps> = ({
                 e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.3)';
               }}
             >
-              Download STL
+              Download File
             </a>
           </div>
           <div style={{ 
