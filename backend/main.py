@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 from supabase_client import supabase
-from utils import calculate_price
+from utils import calculate_price, calculate_dual_pricing
 from file_parser import parse_file, calculate_weight_from_volume, estimate_print_time, is_supported_format
 
 app = FastAPI()
@@ -56,20 +56,21 @@ async def upload_file(file: UploadFile = File(...)):
     # Calculate real weight and print time
     weight_g = calculate_weight_from_volume(volume_mm3)
     print_time_h = estimate_print_time(volume_mm3, triangle_count)
-    price = calculate_price(weight_g, print_time_h)
+    
+    # Calculate pricing for both printer types
+    dual_pricing = calculate_dual_pricing(weight_g, print_time_h)
 
-    # Return quote data without saving to database yet
+    # Return quote data with both pricing options
     return {
         "quote_id": file_id, 
-        "price": price, 
         "file_url": file_url,
+        "pricing_options": dual_pricing,
         "calculation_details": {
             "volume_mm3": volume_mm3,
             "volume_cm3": volume_mm3 / 1000,
             "triangle_count": triangle_count,
             "weight_g": weight_g,
             "print_time_h": print_time_h,
-            "material": "PLA",
             "material_density": 1.24,  # g/cm³
             "file_format": file_format,
             "original_filename": file.filename
@@ -78,23 +79,35 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/confirm-order")
 async def confirm_order(quote_data: dict):
-    # Save confirmed order to Supabase
+    # Extract printer type from request
+    printer_type = quote_data.get("printer_type", "fdm")
+    pricing_info = quote_data.get("pricing_info", {})
+    
+    # Save confirmed order to Supabase with printer type
     order = {
         "id": quote_data["quote_id"],
         "file_url": quote_data["file_url"],
         "weight_g": quote_data["calculation_details"]["weight_g"],
         "print_time_h": quote_data["calculation_details"]["print_time_h"],
         "price_gbp": quote_data["price"],
+        "printer_type": printer_type,
+        "material_type": pricing_info.get("material_type", "PLA"),
         "status": "pending",
         "created_at": datetime.now().isoformat(),
+        # Store both prices for reference
+        "price_fdm": quote_data.get("price_fdm"),
+        "price_resin": quote_data.get("price_resin"),
+        "estimated_print_time_resin": quote_data.get("estimated_print_time_resin")
     }
 
-    supabase.table("orders").insert(order).execute()
+    result = supabase.table("orders").insert(order).execute()
 
     return {
         "order_id": quote_data["quote_id"],
         "status": "confirmed",
-        "message": "Order confirmed successfully"
+        "message": f"Order confirmed for {printer_type.upper()} printing",
+        "printer_type": printer_type,
+        "price": quote_data["price"]
     }
 
 @app.get("/order/{order_id}")

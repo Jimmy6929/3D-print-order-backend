@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FileUploader from '../components/FileUploader';
 import QuoteDisplay from '../components/QuoteDisplay';
 import UploadStatus from '../components/UploadStatus';
+import PrinterSelection from '../components/PrinterSelection';
 
 interface CalculationDetails {
   volume_mm3: number;
@@ -9,52 +10,62 @@ interface CalculationDetails {
   triangle_count: number;
   weight_g: number;
   print_time_h: number;
-  material: string;
   material_density: number;
+  file_format?: string;
+  original_filename?: string;
+}
+
+interface PricingOption {
+  price: number;
+  print_time_h: number;
+  material_type: string;
+  technology: string;
+  details: {
+    material_cost: number;
+    labor_cost: number;
+    setup_fee: number;
+    post_processing: number;
+  };
+}
+
+interface PricingOptions {
+  fdm: PricingOption;
+  resin: PricingOption;
+}
+
+interface QuoteData {
+  quoteId: string;
+  fileUrl: string;
+  pricingOptions: PricingOptions;
+  calculationDetails: CalculationDetails;
 }
 
 const Home: React.FC = () => {
-  const [quote, setQuote] = useState<null | { 
-    quoteId: string; 
-    price: number; 
-    fileUrl: string; 
-    calculationDetails?: CalculationDetails;
+  const [quote, setQuote] = useState<QuoteData | null>(null);
+  const [confirmedOrder, setConfirmedOrder] = useState<null | { 
+    orderId: string; 
+    printerType: string;
+    price: number;
   }>(null);
-  const [confirmedOrder, setConfirmedOrder] = useState<null | { orderId: string }>(null);
   const [status, setStatus] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
-  const handleUploadComplete = (data: { 
-    quoteId: string; 
-    price: number; 
-    fileUrl: string; 
-    calculationDetails?: CalculationDetails;
-  }) => {
+  const handleUploadComplete = (data: QuoteData) => {
     setQuote(data);
     setConfirmedOrder(null);
-    setStatus('Quote generated! Review and confirm your order.');
+    setStatus('Quote generated! Choose your printing technology.');
     setError(null);
   };
 
-  const handleConfirmOrder = async (quoteData: any) => {
-    setIsConfirming(true);
-    try {
-      const res = await fetch('http://localhost:8000/confirm-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quoteData),
+  const handlePrinterSelection = (printerType: 'fdm' | 'resin', pricing: PricingOption) => {
+    if (quote) {
+      setConfirmedOrder({ 
+        orderId: quote.quoteId,
+        printerType: printerType,
+        price: pricing.price
       });
-      if (!res.ok) throw new Error('Order confirmation failed');
-      const data = await res.json();
-      setConfirmedOrder({ orderId: data.order_id });
-      setStatus('Order confirmed successfully!');
-    } catch (err: any) {
-      setError(err.message || 'Order confirmation failed');
-    } finally {
-      setIsConfirming(false);
+      setStatus(`Order confirmed for ${printerType.toUpperCase()} printing!`);
     }
   };
 
@@ -102,22 +113,28 @@ const Home: React.FC = () => {
           <UploadStatus status={status} error={error} />
         </div>
       </div>
-      {quote && !confirmedOrder && <QuoteDisplay 
-        price={quote.price} 
-        quoteId={quote.quoteId} 
-        fileUrl={quote.fileUrl} 
-        calculationDetails={quote.calculationDetails}
-        onConfirmOrder={handleConfirmOrder}
-      />}
+      {quote && !confirmedOrder && (
+        <PrinterSelection 
+          pricingOptions={quote.pricingOptions}
+          onSelectPrinter={handlePrinterSelection}
+          quoteId={quote.quoteId}
+          fileUrl={quote.fileUrl}
+          calculationDetails={quote.calculationDetails}
+        />
+      )}
       
       {confirmedOrder && (
         <div style={{
           marginTop: '2rem',
           padding: '2.5rem',
-          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          background: confirmedOrder.printerType === 'resin' 
+            ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
           borderRadius: '20px',
           textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)',
+          boxShadow: confirmedOrder.printerType === 'resin'
+            ? '0 20px 40px rgba(139, 92, 246, 0.3)'
+            : '0 20px 40px rgba(16, 185, 129, 0.3)',
           color: 'white'
         }}>
           <h2 style={{ 
@@ -126,7 +143,7 @@ const Home: React.FC = () => {
             fontSize: '2rem',
             fontWeight: '600'
           }}>
-            Order Confirmed!
+            {confirmedOrder.printerType.toUpperCase()} Order Confirmed!
           </h2>
           <div style={{ 
             background: 'rgba(255, 255, 255, 0.2)',
@@ -134,8 +151,14 @@ const Home: React.FC = () => {
             borderRadius: '12px',
             margin: '0 0 1.5rem 0'
           }}>
-            <p style={{ margin: '0', fontSize: '1.1rem' }}>
+            <p style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>
               <strong>Order ID:</strong> {confirmedOrder.orderId}
+            </p>
+            <p style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>
+              <strong>Technology:</strong> {confirmedOrder.printerType.toUpperCase()} Printing
+            </p>
+            <p style={{ margin: '0', fontSize: '1rem' }}>
+              <strong>Price:</strong> £{confirmedOrder.price.toFixed(2)}
             </p>
           </div>
           <a 

@@ -6,17 +6,38 @@ interface CalculationDetails {
   triangle_count: number;
   weight_g: number;
   print_time_h: number;
-  material: string;
   material_density: number;
+  file_format?: string;
+  original_filename?: string;
+}
+
+interface PricingOption {
+  price: number;
+  print_time_h: number;
+  material_type: string;
+  technology: string;
+  details: {
+    material_cost: number;
+    labor_cost: number;
+    setup_fee: number;
+    post_processing: number;
+  };
+}
+
+interface PricingOptions {
+  fdm: PricingOption;
+  resin: PricingOption;
+}
+
+interface QuoteData {
+  quoteId: string;
+  fileUrl: string;
+  pricingOptions: PricingOptions;
+  calculationDetails: CalculationDetails;
 }
 
 interface FileUploaderProps {
-  onUploadComplete: (data: { 
-    quoteId: string; 
-    price: number; 
-    fileUrl: string; 
-    calculationDetails?: CalculationDetails;
-  }) => void;
+  onUploadComplete: (data: QuoteData) => void;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
@@ -48,8 +69,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
       const data = await res.json();
       onUploadComplete({
         quoteId: data.quote_id || data.quoteId || '',
-        price: data.price,
         fileUrl: data.file_url,
+        pricingOptions: data.pricing_options,
         calculationDetails: data.calculation_details,
       });
     } catch (err: any) {
