@@ -1,0 +1,16 @@
+1. Landing Page
+
+Purpose: First impression of the brand and entry point to the upload flow.
+Key Elements:
+	•	Hero Banner:
+	•	Tagline: “1D, 2D, 3D — to a Dam Fine Model”
+	•	CTA Button: “Start Uploading” (scrolls or links to upload section after login)
+	•	How It Works Section: 3 steps visual cards (Upload → Preview & Price → Order & Track)
+	•	Trust Signals: Logos of supported formats (STL/OBJ/STEP), customer testimonials, or “Printed X models this week.”
+	•	Navigation:
+	•	Top-right: Sign Up / Login
+	•	Header links: About | Pricing | Dashboard (if logged in)
+
+UX Notes:
+	•	Minimal friction: show core value in under 5 seconds.
+	•	Use subtle animation or micro‑interactions for CTA hover states.

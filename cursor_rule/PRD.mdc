@@ -1,0 +1,181 @@
+---
+alwaysApply: true
+---
+
+🎯 1. Overview
+
+Amodeling is a web platform where users can:
+	•	Upload their own 3D files (STL/OBJ/STEP).
+	•	Instantly get pricing based on weight, time, and material.
+	•	Place and track 3D printing orders with integrated shipping.
+
+Goal for UI/UX:
+Make the process fast, transparent, and friendly, guiding both first‑time and repeat users through upload, pricing, and ordering with minimal friction.
+
+⸻
+
+🖥 2. User Profiles
+
+User Type	Needs	Key UX Goals
+Hobbyist Maker	Quick upload, simple pricing	Clear steps, minimal clutter
+Professional Designer	Bulk uploads, precise pricing, status tracking	Efficiency, detail
+Admin	Order management, customer support	Clean dashboard, quick actions
+
+
+⸻
+
+📐 3. Information Architecture
+
+Main Sections:
+	1.	Landing Page – brand identity, tagline (“1D, 2D, 3D — to a Dam Fine Model”), hero CTA to start uploading.
+	2.	Sign Up / Login – email & password or OAuth.	
+	3.	3D File Upload
+	•	Drag & drop zone for STL/OBJ/STEP files.
+	•	Upload progress bar with validation.
+	4.	Preview & Pricing
+	•	Live 3D viewer (rotate/zoom).
+	•	Instant price calculation (material, size, shipping).
+	5.	Order Checkout
+	•	Address form, payment method.
+	•	Order summary before confirm.
+	6.	Order Tracking Dashboard
+	•	Order statuses: Processing → Printing → Shipped → Delivered.
+	•	Download invoice, reorder button.
+
+⸻
+
+🎨 4. UI/UX Design Requirements
+	•	Style: Modern, clean, friendly. Rounded corners, subtle shadows, plenty of whitespace.
+	•	Responsive: Must work on desktop, tablet, mobile.
+	•	3D Viewer:
+	•	Real‑time model preview (STL/OBJ/STEP).
+	•	Material color selection and size info.
+	•	Step-by-Step Flow:
+	•	Clear progress indicator (Upload → Preview → Checkout → Track).
+	•	Tooltips for first-time users.
+	•	Credit System Integration:
+	•	Always show remaining credits in header.
+	•	“Buy Credits” button near upload actions.
+	•	Accessibility:
+	•	ARIA labels for screen readers.
+	•	High contrast and scalable fonts.
+
+⸻
+
+⚡ 5. Key User Flows
+
+Example Flow – Upload to Order:
+	1.	Landing → Upload → Preview & Price → Buy Credits → Checkout → Track Order.
+	2.	Users upload 3D files directly—no generation step.
+	3.	Payment confirmation triggers instant order creation and tracking number.
+
+⸻
+
+🔧 6. Technical Notes for UI/UX
+	•	Frontend Tech: Next.js + React, TailwindCSS for styling.
+	•	3D Viewer: Integrate Three.js or react‑three‑fiber.
+	•	Real-Time Feedback: Show skeleton loaders while analyzing files.
+	•	Notifications: Toast alerts for success/error states.
+	•	Shipping Labels: Display QR code or download label after order.
+
+⸻
+
+✅ 7. Acceptance Criteria
+	•	Users can upload models, see price instantly, and complete checkout in under 3 minutes.
+	•	UI elements tested on Chrome, Safari, Edge, Firefox.
+	•	Mobile UX validated on iOS & Android (no horizontal scrolling, tap targets ≥44px).
+
+⸻
+
+📈 8. KPIs for UX
+	•	Time to first order < 3 minutes.
+	•	Upload-to-order completion rate > 70%.
+	•	Support tickets related to navigation < 5% of orders.🎯 1. Overview
+
+Amodeling is a web platform where users can:
+	•	Upload their own 3D files (STL/OBJ/STEP).
+	•	Instantly get pricing based on weight, time, and material.
+	•	Place and track 3D printing orders with integrated shipping.
+
+Goal for UI/UX:
+Make the process fast, transparent, and friendly, guiding both first‑time and repeat users through upload, pricing, and ordering with minimal friction.
+
+⸻
+
+🖥 2. User Profiles
+
+User Type	Needs	Key UX Goals
+Hobbyist Maker	Quick upload, simple pricing	Clear steps, minimal clutter
+Professional Designer	Bulk uploads, precise pricing, status tracking	Efficiency, detail
+Admin	Order management, customer support	Clean dashboard, quick actions
+
+
+⸻
+
+📐 3. Information Architecture
+
+Main Sections:
+	1.	Landing Page – brand identity, tagline (“1D, 2D, 3D — to a Dam Fine Model”), hero CTA to start uploading.
+	2.	Sign Up / Login – email & password or OAuth.	
+	3.	3D File Upload
+	•	Drag & drop zone for STL/OBJ/STEP files.
+	•	Upload progress bar with validation.
+	4.	Preview & Pricing
+	•	Live 3D viewer (rotate/zoom).
+	•	Instant price calculation (material, size, shipping).
+	5.	Order Checkout
+	•	Address form, payment method.
+	•	Order summary before confirm.
+	6.	Order Tracking Dashboard
+	•	Order statuses: Processing → Printing → Shipped → Delivered.
+	•	Download invoice, reorder button.
+
+⸻
+
+🎨 4. UI/UX Design Requirements
+	•	Style: Modern, clean, friendly. Rounded corners, subtle shadows, plenty of whitespace.
+	•	Responsive: Must work on desktop, tablet, mobile.
+	•	3D Viewer:
+	•	Real‑time model preview (STL/OBJ/STEP).
+	•	Material color selection and size info.
+	•	Step-by-Step Flow:
+	•	Clear progress indicator (Upload → Preview → Checkout → Track).
+	•	Tooltips for first-time users.
+	•	Credit System Integration:
+	•	Always show remaining credits in header.
+	•	“Buy Credits” button near upload actions.
+	•	Accessibility:
+	•	ARIA labels for screen readers.
+	•	High contrast and scalable fonts.
+
+⸻
+
+⚡ 5. Key User Flows
+
+Example Flow – Upload to Order:
+	1.	Landing → Upload → Preview & Price → Buy Credits → Checkout → Track Order.
+	2.	Users upload 3D files directly—no generation step.
+	3.	Payment confirmation triggers instant order creation and tracking number.
+
+⸻
+
+🔧 6. Technical Notes for UI/UX
+	•	Frontend Tech: Next.js + React, TailwindCSS for styling.
+	•	3D Viewer: Integrate Three.js or react‑three‑fiber.
+	•	Real-Time Feedback: Show skeleton loaders while analyzing files.
+	•	Notifications: Toast alerts for success/error states.
+	•	Shipping Labels: Display QR code or download label after order.
+
+⸻
+
+✅ 7. Acceptance Criteria
+	•	Users can upload models, see price instantly, and complete checkout in under 3 minutes.
+	•	UI elements tested on Chrome, Safari, Edge, Firefox.
+	•	Mobile UX validated on iOS & Android (no horizontal scrolling, tap targets ≥44px).
+
+⸻
+
+📈 8. KPIs for UX
+	•	Time to first order < 3 minutes.
+	•	Upload-to-order completion rate > 70%.
+	•	Support tickets related to navigation < 5% of orders.

@@ -9,6 +9,7 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { ClockIcon as ClockIconSolid } from '@heroicons/react/24/solid';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PricingOption {
   price: number;
@@ -45,6 +46,7 @@ const PrinterSelection: React.FC<PrinterSelectionProps> = ({
 }) => {
   const [selectedPrinter, setSelectedPrinter] = useState<'fdm' | 'resin' | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
+  const { session } = useAuth();
 
   const handleSelection = async (printerType: 'fdm' | 'resin') => {
     setSelectedPrinter(printerType);
@@ -67,11 +69,19 @@ const PrinterSelection: React.FC<PrinterSelectionProps> = ({
     };
 
     try {
+      // Prepare headers with optional authorization
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add authorization header if user is authenticated
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch('http://localhost:8000/confirm-order', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(orderData),
       });
 

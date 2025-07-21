@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import FileUploader from '../components/FileUploader';
-import QuoteDisplay from '../components/QuoteDisplay';
-import UploadStatus from '../components/UploadStatus';
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import TrustSignals from '../components/TrustSignals';
+import HowItWorks from '../components/HowItWorks';
+import UploadSection from '../components/UploadSection';
+import Features from '../components/Features';
+import Footer from '../components/Footer';
 import PrinterSelection from '../components/PrinterSelection';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CalculationDetails {
   volume_mm3: number;
@@ -47,15 +52,26 @@ const Home: React.FC = () => {
     printerType: string;
     price: number;
   }>(null);
-  const [status, setStatus] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const [isConfirming, setIsConfirming] = useState(false);
+  
+  const { user } = useAuth();
+
+  const scrollToHero = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToUpload = () => {
+    const uploadSection = document.getElementById('upload-section');
+    uploadSection?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleUploadComplete = (data: QuoteData) => {
     setQuote(data);
     setConfirmedOrder(null);
-    setStatus('Quote generated! Choose your printing technology.');
-    setError(null);
+    // Scroll to printer selection after upload
+    setTimeout(() => {
+      const printerSection = document.getElementById('printer-selection');
+      printerSection?.scrollIntoView({ behavior: 'smooth' });
+    }, 500);
   };
 
   const handlePrinterSelection = (printerType: 'fdm' | 'resin', pricing: PricingOption) => {
@@ -65,155 +81,157 @@ const Home: React.FC = () => {
         printerType: printerType,
         price: pricing.price
       });
-      setStatus(`Order confirmed for ${printerType.toUpperCase()} printing!`);
+      // Scroll to order confirmation
+      setTimeout(() => {
+        const orderSection = document.getElementById('order-confirmation');
+        orderSection?.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
     }
   };
 
+  const handleStartOver = () => {
+    setQuote(null);
+    setConfirmedOrder(null);
+    // Scroll back to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLogoClick = () => {
+    // Reset all workflow state when logo is clicked
+    setQuote(null);
+    setConfirmedOrder(null);
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem 1rem'
-    }}>
-      <div style={{ 
-        maxWidth: quote ? '1200px' : '600px', 
-        margin: '0 auto', 
-        transition: 'max-width 0.3s ease'
-      }}>
-        <div style={{ 
-          padding: '3rem 2rem', 
-          background: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '20px', 
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.3)'
-        }}>
-          <h1 style={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            marginBottom: '1rem',
-            fontSize: '3rem',
-            fontWeight: '700',
-            letterSpacing: '-1px'
-          }}>
-            3D Print Order System
-          </h1>
-          <p style={{ 
-            color: '#64748b', 
-            fontSize: '1.2rem',
-            margin: '0 0 2.5rem 0',
-            fontWeight: '400'
-          }}>
-            Upload your STL file and get an instant quote with detailed pricing breakdown
-          </p>
-          <FileUploader onUploadComplete={handleUploadComplete} />
-          <UploadStatus status={status} error={error} />
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      <Header onLogoClick={handleLogoClick} />
+      <Hero 
+        onScrollToUpload={scrollToUpload}
+        onUploadComplete={handleUploadComplete}
+      />
+      
+      {/* Show printer selection after upload */}
       {quote && !confirmedOrder && (
-        <PrinterSelection 
-          pricingOptions={quote.pricingOptions}
-          onSelectPrinter={handlePrinterSelection}
-          quoteId={quote.quoteId}
-          fileUrl={quote.fileUrl}
-          calculationDetails={quote.calculationDetails}
-        />
+        <section id="printer-selection" className="py-32 bg-white">
+          <PrinterSelection 
+            pricingOptions={quote.pricingOptions}
+            onSelectPrinter={handlePrinterSelection}
+            quoteId={quote.quoteId}
+            fileUrl={quote.fileUrl}
+            calculationDetails={quote.calculationDetails}
+          />
+        </section>
       )}
-      
+
+      {/* Show order confirmation */}
       {confirmedOrder && (
-        <div style={{
-          marginTop: '2rem',
-          padding: '2.5rem',
-          background: confirmedOrder.printerType === 'resin' 
-            ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
-            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-          borderRadius: '20px',
-          textAlign: 'center',
-          boxShadow: confirmedOrder.printerType === 'resin'
-            ? '0 20px 40px rgba(139, 92, 246, 0.3)'
-            : '0 20px 40px rgba(16, 185, 129, 0.3)',
-          color: 'white'
-        }}>
-          <h2 style={{ 
-            color: 'white', 
-            margin: '0 0 1.5rem 0',
-            fontSize: '2rem',
-            fontWeight: '600'
-          }}>
-            {confirmedOrder.printerType.toUpperCase()} Order Confirmed!
-          </h2>
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.2)',
-            padding: '1rem',
-            borderRadius: '12px',
-            margin: '0 0 1.5rem 0'
-          }}>
-            <p style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>
-              <strong>Order ID:</strong> {confirmedOrder.orderId}
-            </p>
-            <p style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>
-              <strong>Technology:</strong> {confirmedOrder.printerType.toUpperCase()} Printing
-            </p>
-            <p style={{ margin: '0', fontSize: '1rem' }}>
-              <strong>Price:</strong> £{confirmedOrder.price.toFixed(2)}
-            </p>
+        <section id="order-confirmation" className="py-32 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div style={{
+              padding: '3rem',
+              background: confirmedOrder.printerType === 'resin' 
+                ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              borderRadius: '20px',
+              textAlign: 'center',
+              boxShadow: confirmedOrder.printerType === 'resin'
+                ? '0 20px 40px rgba(139, 92, 246, 0.3)'
+                : '0 20px 40px rgba(16, 185, 129, 0.3)',
+              color: 'white'
+            }}>
+              <h2 style={{ 
+                color: 'white', 
+                margin: '0 0 2rem 0',
+                fontSize: '2rem',
+                fontWeight: '600'
+              }}>
+                🎉 {confirmedOrder.printerType.toUpperCase()} Order Confirmed!
+              </h2>
+              <div style={{ 
+                background: 'rgba(255, 255, 255, 0.2)',
+                padding: '2rem',
+                borderRadius: '12px',
+                margin: '0 0 2.5rem 0'
+              }}>
+                <p style={{ margin: '0 0 0.75rem 0', fontSize: '1.1rem' }}>
+                  <strong>Order ID:</strong> {confirmedOrder.orderId}
+                </p>
+                <p style={{ margin: '0 0 0.75rem 0', fontSize: '1rem' }}>
+                  <strong>Technology:</strong> {confirmedOrder.printerType.toUpperCase()} Printing
+                </p>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>
+                  <strong>Price:</strong> £{confirmedOrder.price.toFixed(2)}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <a 
+                  href={`/order/${confirmedOrder.orderId}`}
+                  style={{
+                    display: 'inline-block',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontWeight: '600',
+                    fontSize: '1.1rem',
+                    padding: '1rem 2rem',
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Track Your Order →
+                </a>
+                <button
+                  onClick={handleStartOver}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    fontWeight: '600',
+                    fontSize: '1.1rem',
+                    padding: '1rem 2rem',
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    cursor: 'pointer'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Start New Order
+                </button>
+              </div>
+            </div>
           </div>
-          <a 
-            href={`/order/${confirmedOrder.orderId}`}
-            style={{
-              display: 'inline-block',
-              background: 'rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: '1.1rem',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '12px',
-              transition: 'all 0.3s ease',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            Track Your Order →
-          </a>
-        </div>
+        </section>
+      )}
+
+      {/* Only show these sections if no upload workflow is active */}
+      {!quote && (
+        <>
+          <TrustSignals />
+          <HowItWorks />
+          <UploadSection onScrollToHero={scrollToHero} />
+          <Features />
+        </>
       )}
       
-      {isConfirming && (
-        <div style={{
-          marginTop: '2rem',
-          padding: '2.5rem',
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-          borderRadius: '20px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(245, 158, 11, 0.3)',
-          color: 'white'
-        }}>
-          <div style={{
-            display: 'inline-block',
-            width: '40px',
-            height: '40px',
-            border: '3px solid rgba(255, 255, 255, 0.3)',
-            borderTop: '3px solid white',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            marginBottom: '1rem'
-          }}></div>
-          <p style={{ margin: '0', fontSize: '1.2rem', fontWeight: '500' }}>
-            Confirming your order...
-          </p>
-        </div>
-      )}
+      <Footer />
     </div>
   );
 };

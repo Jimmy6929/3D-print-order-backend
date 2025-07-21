@@ -1,0 +1,17 @@
+A secure sign‑up and login system built with Supabase, featuring email/password authentication and one‑click OAuth options (Google, GitHub, Apple) — designed with a clean, minimal UI for easy access before uploading files.
+
+2. Sign Up / Login
+
+Purpose: Create an account or log in securely before uploading files.
+Key Elements:
+	•	Sign Up Form:
+	•	Fields: Email, Password, Confirm Password.
+	•	Alternative: OAuth (Google, GitHub, Apple).
+	•	Login Form:
+	•	Fields: Email, Password.
+	•	“Forgot Password?” link.
+	•	Error Handling: Inline validation (e.g., weak password, invalid email).
+    •   Save User Address for delivery
+	•	UX Notes:
+	•	Keep it minimal (one column, center aligned).
+	•	Show privacy and terms links below.

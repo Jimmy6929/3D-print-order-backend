@@ -1,5 +1,6 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 import uuid
 import os
 from datetime import datetime
@@ -18,6 +19,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Helper function to get current user from authorization header
+async def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[dict]:
+    """Extract user info from authorization header (optional)"""
+    if not authorization:
+        return None
+    
+    try:
+        # Remove 'Bearer ' prefix if present
+        token = authorization.replace('Bearer ', '') if authorization.startswith('Bearer ') else authorization
+        
+        # Get user from Supabase auth
+        user_response = supabase.auth.get_user(token)
+        if user_response.user:
+            return {
+                "id": user_response.user.id,
+                "email": user_response.user.email
+            }
+    except Exception as e:
+        print(f"Auth error: {e}")
+        # Don't raise error - just return None for guest users
+        pass
+    
+    return None
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -78,7 +103,7 @@ async def upload_file(file: UploadFile = File(...)):
     }
 
 @app.post("/confirm-order")
-async def confirm_order(quote_data: dict):
+async def confirm_order(quote_data: dict, current_user: Optional[dict] = Depends(get_current_user)):
     # Extract printer type from request
     printer_type = quote_data.get("printer_type", "fdm")
     pricing_info = quote_data.get("pricing_info", {})
@@ -99,6 +124,16 @@ async def confirm_order(quote_data: dict):
         "price_resin": quote_data.get("price_resin"),
         "estimated_print_time_resin": quote_data.get("estimated_print_time_resin")
     }
+    
+    # Add user information if authenticated
+    if current_user:
+        order["user_id"] = current_user["id"]
+        order["customer_email"] = current_user["email"]
+    else:
+        # For guest orders, we could collect email separately
+        order["user_id"] = None
+        order["customer_email"] = quote_data.get("customer_email")
+        order["customer_name"] = quote_data.get("customer_name")
 
     result = supabase.table("orders").insert(order).execute()
 
